@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.recallrecall.app.ui.wechat.WechatFragment"
+        android:label="@string/title_wechat"
+        tools:layout="@layout/fragment_wechat" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.recallrecall.app.ui.whatsapp.WhatsappFragment"
+        android:label="@string/title_whatsapp"
+        tools:layout="@layout/fragment_wechat" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.recallrecall.app.ui.notifications.NotificationsFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" >
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/chat_compose"
+        android:name="com.recallrecall.app.ui.chat.ChatFragment"
+        android:label="@string/titile_fragment_chat"
+        tools:layout="@layout/fragment_chat"/>
+</navigation>
