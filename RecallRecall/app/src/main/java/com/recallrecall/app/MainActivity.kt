@@ -104,8 +104,9 @@ class MainActivity : AppCompatActivity() {
             val transation = supportFragmentManager?.beginTransaction()!!.apply {
                 replace(R.id.fragment_wechat, fragment)
                 addToBackStack(null)
+                commitAllowingStateLoss()
             }
-            transation.commit()
+//            transation.commit()
         }
 
     }

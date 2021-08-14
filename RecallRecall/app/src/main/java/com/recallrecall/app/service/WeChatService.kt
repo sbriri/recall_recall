@@ -152,10 +152,9 @@ class WeChatService(context: Context) {
         message: Message
     ): PendingIntent? {
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             addCategory(Intent.CATEGORY_LAUNCHER)
             component = ComponentName(context,MainActivity::class.java)
-
         }
         intent.putExtra("name", message.name)
         val pendingIntent: PendingIntent =
