@@ -25,7 +25,6 @@ import androidx.navigation.NavDeepLinkBuilder
 import android.os.Bundle
 import androidx.compose.ui.res.stringResource
 import com.recallrecall.app.R
-import com.recallrecall.app.ui.chat.ChatActivity
 import java.lang.StringBuilder
 
 
@@ -150,13 +149,14 @@ class WeChatService(context: Context) {
         context: Context,
         message: Message
     ): PendingIntent? {
-        val intent = Intent(context, ChatActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        intent.putExtra("name", message.name)
-        val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-        return pendingIntent
+//        val intent = Intent(context, ChatActivity::class.java).apply {
+//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//        }
+//        intent.putExtra("name", message.name)
+//        val pendingIntent: PendingIntent =
+//            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+//        return pendingIntent
+        return null
     }
 
 }

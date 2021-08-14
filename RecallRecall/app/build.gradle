@@ -112,7 +112,9 @@ dependencies {
 
     // Jetpack Compose integration
     implementation "androidx.paging:paging-compose:1.0.0-alpha12"
+    def paging_version = "3.0.1"
 
+    implementation "androidx.paging:paging-runtime:$paging_version"
 
 
 }

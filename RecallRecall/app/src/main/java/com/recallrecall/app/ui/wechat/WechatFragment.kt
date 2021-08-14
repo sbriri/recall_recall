@@ -17,7 +17,6 @@ import com.recallrecall.app.MainActivity
 import com.recallrecall.app.R
 import com.recallrecall.app.databinding.FragmentWechatBinding
 import com.recallrecall.app.db.Message
-import com.recallrecall.app.ui.chat.ChatActivity
 import com.recallrecall.app.ui.chat.ChatFragment
 import kotlinx.android.synthetic.main.fragment_wechat.view.*
 
@@ -74,10 +73,6 @@ class WechatFragment : Fragment() {
             })
 
         }
-
-
-
-
 
 
         return root
