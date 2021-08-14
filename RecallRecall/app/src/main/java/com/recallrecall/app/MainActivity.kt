@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -85,8 +84,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
 
-        val extra = intent.getStringExtra("name")
-        if (extra != null){
+        getNotify(intent)
+        super.onResume()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+
+        getNotify(intent)
+        setIntent(intent)
+        super.onNewIntent(intent)
+    }
+
+    private fun getNotify(intent: Intent?) {
+
+        val extra = intent?.getStringExtra("name")
+        if (extra != null) {
+            intent.removeExtra("name")
             val fragment = ChatFragment(extra, getString(R.string.title_wechat))
             val transation = supportFragmentManager?.beginTransaction()!!.apply {
                 replace(R.id.fragment_wechat, fragment)
@@ -94,6 +107,6 @@ class MainActivity : AppCompatActivity() {
             }
             transation.commit()
         }
-        super.onResume()
+
     }
 }

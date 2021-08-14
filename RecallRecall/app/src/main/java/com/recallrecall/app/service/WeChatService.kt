@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import android.app.NotificationManager
 
 import android.app.NotificationChannel
+import android.content.ComponentName
 import android.content.Intent
 
 import android.os.Build
@@ -151,11 +152,14 @@ class WeChatService(context: Context) {
         message: Message
     ): PendingIntent? {
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            component = ComponentName(context,MainActivity::class.java)
+
         }
         intent.putExtra("name", message.name)
         val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         return pendingIntent
     }
 
