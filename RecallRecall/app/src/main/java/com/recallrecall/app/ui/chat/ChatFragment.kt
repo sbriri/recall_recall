@@ -15,6 +15,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,17 +25,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.paging.*
 import com.recallrecall.app.R
 import com.recallrecall.app.databinding.FragmentChatBinding
 import com.recallrecall.app.db.Message
 import com.recallrecall.app.db.MessageDataBase
 import com.recallrecall.app.ui.chat.ui.theme.RecallRecallTheme
 import kotlinx.coroutines.launch
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.PagingSource
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
@@ -45,12 +43,11 @@ import kotlinx.coroutines.flow.Flow
 
 class ChatViewModel(name: String) : ViewModel() {
     val dataBase = MessageDataBase.getInstance(Activity().baseContext)
-    val messageList:
-            PagingSource<Int, Message> = dataBase?.messageDao!!.loadByName(name)
 
-    val msgs =  Pager(PagingConfig(pageSize = 50,enablePlaceholders = true)){
-        messageList
-    }.flow
+    val msgs =
+        Pager(PagingConfig(pageSize = 50, enablePlaceholders = true)) {
+            dataBase?.messageDao!!.loadByName(name)
+        }.flow
 
 }
 
@@ -60,7 +57,6 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
     private lateinit var viewModel: ChatViewModel
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
-
 
 
     @ExperimentalFoundationApi
@@ -82,9 +78,9 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
             RecallRecallTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-//                    Scaffold(topBar = { AppBar(title = name) }) {
+                    Scaffold(content = {
                         ShowAllMessages(viewModel.msgs, viewModel)
-//                    }
+                    })
 
                 }
             }
@@ -92,7 +88,6 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
 
         return root
     }
-
 
 
     override fun onDestroy() {
@@ -143,11 +138,11 @@ fun ShowMessage(
 }
 
 
-
 @ExperimentalFoundationApi
 @Composable
 fun ShowAllMessages(
     pageMessages: Flow<PagingData<Message>>,
+
     viewModel: ChatViewModel
 ) {
     val lazyMessages: LazyPagingItems<Message> = pageMessages.collectAsLazyPagingItems()
@@ -160,7 +155,10 @@ fun ShowAllMessages(
         modifier = Modifier
             .fillMaxHeight(),
     ) {
-        items(lazyMessages) { message ->
+        items(items = lazyMessages,
+            key = { message ->
+                message.id
+            }) { message ->
             if (message != null) {
                 ShowMessage(
                     time = message.date!!,
@@ -175,12 +173,43 @@ fun ShowAllMessages(
             }
             Divider()
         }
+
+
+        lazyMessages.apply {
+            when {
+                loadState.refresh is LoadState.Loading -> {
+                    item { LoadingView(modifier = Modifier.fillParentMaxSize()) }
+                }
+                loadState.append is LoadState.Loading -> {
+                    item { LoadingItem() }
+                }
+                loadState.refresh is LoadState.Error -> {
+                    val e = lazyMessages.loadState.refresh as LoadState.Error
+                    item {
+                        ErrorItem(
+                            message = e.error.localizedMessage!!,
+                            modifier = Modifier.fillParentMaxSize(),
+                            onClickRetry = { retry() }
+                        )
+                    }
+                }
+                loadState.append is LoadState.Error -> {
+                    val e = lazyMessages.loadState.append as LoadState.Error
+                    item {
+                        ErrorItem(
+                            message = e.error.localizedMessage!!,
+                            onClickRetry = { retry() }
+                        )
+                    }
+                }
+            }
+        }
+
         scope.launch {
             // scroll to the first item
             lazyListState.scrollToItem(lazyListState.firstVisibleItemIndex)
 
         }
-
 
 
     }
