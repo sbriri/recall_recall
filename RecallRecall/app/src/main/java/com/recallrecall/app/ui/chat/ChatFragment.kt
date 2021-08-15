@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +38,8 @@ import kotlinx.coroutines.launch
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.recallrecall.app.MainActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +49,7 @@ class ChatViewModel(name: String) : ViewModel() {
     val dataBase = MessageDataBase.getInstance(Activity().baseContext)
 
     val msgs =
-        Pager(PagingConfig(pageSize = 50, enablePlaceholders = true)) {
+        Pager(PagingConfig(pageSize = 30, enablePlaceholders = true)) {
             dataBase?.messageDao!!.loadByName(name)
         }.flow
 
@@ -93,9 +97,7 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
     override fun onDestroy() {
         super.onDestroy()
         (activity as MainActivity?)?.findViewById<Toolbar>(R.id.toolbar)?.title = from
-
     }
-
 
 }
 
@@ -145,16 +147,9 @@ fun ShowAllMessages(
 
     viewModel: ChatViewModel
 ) {
+
     val lazyMessages: LazyPagingItems<Message> = pageMessages.collectAsLazyPagingItems()
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    LazyColumn(
-        reverseLayout = false,
-        state = lazyListState,
-        verticalArrangement = Arrangement.Top,
-        modifier = Modifier
-            .fillMaxHeight(),
-    ) {
+    SwipeRefreshList(collectAsLazyPagingItems = lazyMessages){
         items(items = lazyMessages,
             key = { message ->
                 message.id
@@ -174,68 +169,10 @@ fun ShowAllMessages(
             Divider()
         }
 
-
-        lazyMessages.apply {
-            when {
-                loadState.refresh is LoadState.Loading -> {
-                    item { LoadingView(modifier = Modifier.fillParentMaxSize()) }
-                }
-                loadState.append is LoadState.Loading -> {
-                    item { LoadingItem() }
-                }
-                loadState.refresh is LoadState.Error -> {
-                    val e = lazyMessages.loadState.refresh as LoadState.Error
-                    item {
-                        ErrorItem(
-                            message = e.error.localizedMessage!!,
-                            modifier = Modifier.fillParentMaxSize(),
-                            onClickRetry = { retry() }
-                        )
-                    }
-                }
-                loadState.append is LoadState.Error -> {
-                    val e = lazyMessages.loadState.append as LoadState.Error
-                    item {
-                        ErrorItem(
-                            message = e.error.localizedMessage!!,
-                            onClickRetry = { retry() }
-                        )
-                    }
-                }
-            }
-        }
-
-        scope.launch {
-            // scroll to the first item
-            lazyListState.scrollToItem(lazyListState.firstVisibleItemIndex)
-
-        }
-
-
     }
 
 
 }
 
 
-/**
- * only for preview
- */
-@Composable
-fun AppBar(title: String) {
-    TopAppBar(
-        title = {
-            Text(text = title)
-        }, navigationIcon = {
-            // show drawer icon
-            IconButton(
-                onClick = {
-                    Log.d("TAG", "Drawer icon clicked")
-                }
-            ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "")
-            }
-        }
-    )
 
-}

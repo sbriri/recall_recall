@@ -114,7 +114,12 @@ dependencies {
     implementation "androidx.paging:paging-compose:1.0.0-alpha12"
     def paging_version = "3.0.1"
 
-    implementation "androidx.paging:paging-runtime:$paging_version"
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    
+
+    //animation
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.16.0"
+
 
 
 }
