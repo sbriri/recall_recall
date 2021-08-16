@@ -9,21 +9,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -34,15 +29,13 @@ import com.recallrecall.app.databinding.FragmentChatBinding
 import com.recallrecall.app.db.Message
 import com.recallrecall.app.db.MessageDataBase
 import com.recallrecall.app.ui.chat.ui.theme.RecallRecallTheme
-import kotlinx.coroutines.launch
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.recallrecall.app.MainActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.Flow
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ChatViewModel(name: String) : ViewModel() {
@@ -101,15 +94,29 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
 
 }
 
+@Composable
+fun ShowDate(date: String) {
+    LazyRow(
+        Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        item {
+            Text(text = dateToWrittenDate(date))
+        }
+    }
+}
 
 @Composable
 fun ShowMessage(
-    time: String,
+    date: String,
     text: String,
     recalled: Boolean = false,
     click: (() -> Unit)? = null
 ) {
     val mark = remember { mutableStateOf(recalled) }
+
     Row(
         Modifier
             .clickable(onClick = {
@@ -124,13 +131,21 @@ fun ShowMessage(
 
         ) {
 
+        //yyyy dd/dd tt:tt:tt
+        val time = date.substring(10)
         Text(
             text = time, Modifier
                 .width(70.dp)
                 .height(48.dp)
                 .padding(start = 18.dp), fontSize = 12.sp, textAlign = TextAlign.Center
         )
-
+        Divider(
+            color = Color.Black,
+            modifier = Modifier
+                .padding(10.dp)
+                .width(1.dp)
+                .height(30.dp)
+        )
         Text(
             text = text, Modifier.padding(start = 10.dp), fontSize = 16.sp
         )
@@ -139,6 +154,22 @@ fun ShowMessage(
     }
 }
 
+
+private fun isToday(date: String): Boolean {
+    val sdf = SimpleDateFormat("yyyy MM/dd hh:mm:ss")
+    val currentDate = sdf.format(Date())
+    return date.substring(0, 10) == currentDate.substring(0, 10)
+}
+
+private fun dateToWrittenDate(date: String): String {
+    if (isToday(date)) {
+        return "Today"
+    }
+    val year = date.substring(0, 4)
+    val month = date.substring(5, 7)
+    val day = date.substring(8, 10)
+    return "$month/$day $year"
+}
 
 @ExperimentalFoundationApi
 @Composable
@@ -149,14 +180,19 @@ fun ShowAllMessages(
 ) {
 
     val lazyMessages: LazyPagingItems<Message> = pageMessages.collectAsLazyPagingItems()
-    SwipeRefreshList(collectAsLazyPagingItems = lazyMessages){
+    var date: String
+    SwipeRefreshList(collectAsLazyPagingItems = lazyMessages) {
         items(items = lazyMessages,
             key = { message ->
                 message.id
             }) { message ->
             if (message != null) {
+
+                if (isToday(message.date!!)) {
+                    ShowDate(date = message.date!!)
+                }
                 ShowMessage(
-                    time = message.date!!,
+                    date = message.date!!,
                     text = message.content,
                     recalled = message.recalled,
                     click = {
@@ -166,7 +202,7 @@ fun ShowAllMessages(
                     }
                 )
             }
-            Divider()
+//            Divider()
         }
 
     }
@@ -175,4 +211,10 @@ fun ShowAllMessages(
 }
 
 
-
+@Preview
+@Composable
+fun preview() {
+    val date = "2021 07/16 08:59:16"
+    val txt = "this is a text"
+    ShowMessage(date = date, text = txt)
+}
