@@ -48,6 +48,19 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    signingConfigs {
+        debug {
+            storeFile file('keystores/debug1.jks')
+            keyPassword '123456'
+            storePassword '123456'
+        }
+        release {
+            keyAlias 'AndroidDebugKey'
+            keyPassword '123456'
+            storeFile file('keystores/debug1.jks')
+            storePassword '123456'
+        }
+    }
 }
 
 dependencies {
