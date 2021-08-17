@@ -26,7 +26,7 @@ interface MessageDao {
     @Query(value = "SELECT * FROM db_message WHERE name LIKE :name AND recalled LIKE :recalled")
     fun loadByNameAndRecalled(name: String?, recalled: Boolean): List<Message?>?
 
-    @Query(value = "SELECT DISTINCT name FROM db_message")
+    @Query(value = "SELECT DISTINCT name FROM db_message ORDER BY id DESC")
     fun loadAllName(): LiveData<List<String>?>?
 
     @Query(value = "SELECT * FROM db_message WHERE name = :name and id = (SELECT max(id) FROM db_message WHERE name = :name)")

@@ -104,9 +104,7 @@ fun ShowDate(date: String) {
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-
         Text(text = dateToWrittenDate(date))
-
     }
 }
 
@@ -119,9 +117,14 @@ fun ShowMessage(
     click: (() -> Unit)? = null
 ) {
     val mark = remember { mutableStateOf(recalled) }
+    var currentDate = remember { mutableStateOf("") }
 
     Column {
-
+        //todo fix the date disappear issue (causing by paging)
+//        if (!isSameDay(currentDate.value, date!!)) {
+//            ShowDate(date = date!!)
+//            currentDate.value = date!!
+//        }
 
         Row(
             Modifier
@@ -195,8 +198,8 @@ fun ShowAllMessages(
 
     val lazyMessages: LazyPagingItems<Message> = pageMessages.collectAsLazyPagingItems()
 
-    val sdf = SimpleDateFormat("yyyy MM/dd hh:mm:ss")
-    val currentDate = remember { mutableStateOf("") }
+//    val sdf = SimpleDateFormat("yyyy MM/dd hh:mm:ss")
+    var currentDate = remember { mutableStateOf("") }
     SwipeRefreshList(collectAsLazyPagingItems = lazyMessages) {
         items(items = lazyMessages,
             key = { message ->
@@ -204,11 +207,10 @@ fun ShowAllMessages(
             }) { message ->
             if (message != null) {
 
-                if (!isSameDay(currentDate.value, message.date!!)) {
-                    ShowDate(date = message.date!!)
-                    Log.d("Wechat", "$currentDate.value $message.date!!")
-                    currentDate.value = message.date!!
-                }
+//                if (!isSameDay(currentDate.value, message.date!!)) {
+//                    ShowDate(date = message.date!!)
+//                    currentDate.value = message.date!!
+//                }
 
 //                if (!isSameDay(date, message.date!!)) {
 //                    ShowDate(date = message.date!!)
