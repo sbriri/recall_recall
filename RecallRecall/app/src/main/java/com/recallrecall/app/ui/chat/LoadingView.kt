@@ -95,10 +95,10 @@ fun <T : Any> SwipeRefreshList(collectAsLazyPagingItems: LazyPagingItems<T>, con
                 }
             }
 
-            scope.launch {
-                // scroll to the first item
-                lazyListState.scrollToItem(0)
-            }
+//            scope.launch {
+//                // scroll to the first item
+//                lazyListState.scrollToItem(0)
+//            }
         }
 
     }

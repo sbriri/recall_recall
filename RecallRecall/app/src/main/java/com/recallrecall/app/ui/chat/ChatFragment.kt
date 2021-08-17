@@ -9,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -96,17 +97,19 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
 
 @Composable
 fun ShowDate(date: String) {
-    LazyRow(
-        Modifier.fillMaxSize(),
+    Log.d("Wechat", "$date")
+    Row(
+        Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        item {
-            Text(text = dateToWrittenDate(date))
-        }
+
+        Text(text = dateToWrittenDate(date))
+
     }
 }
+
 
 @Composable
 fun ShowMessage(
@@ -117,51 +120,57 @@ fun ShowMessage(
 ) {
     val mark = remember { mutableStateOf(recalled) }
 
-    Row(
-        Modifier
-            .clickable(onClick = {
-                Log.d("Wechat", "clicked")
-                mark.value = !mark.value
-                click?.invoke()
-            })
-            .fillMaxWidth()
-            .background(color = if (mark.value) colorResource(R.color.pinky_red) else Color.White),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-
-        ) {
-
-        //yyyy dd/dd tt:tt:tt
-        val time = date.substring(10)
-        Text(
-            text = time, Modifier
-                .width(70.dp)
-                .height(48.dp)
-                .padding(start = 18.dp), fontSize = 12.sp, textAlign = TextAlign.Center
-        )
-        Divider(
-            color = Color.Black,
-            modifier = Modifier
-                .padding(10.dp)
-                .width(1.dp)
-                .height(30.dp)
-        )
-        Text(
-            text = text, Modifier.padding(start = 10.dp), fontSize = 16.sp
-        )
+    Column {
 
 
+        Row(
+            Modifier
+                .clickable(onClick = {
+                    Log.d("Wechat", "clicked")
+                    mark.value = !mark.value
+                    click?.invoke()
+                })
+                .fillMaxWidth()
+                .background(color = if (mark.value) colorResource(R.color.pinky_red) else Color.White),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+
+            ) {
+
+            //yyyy dd/dd tt:tt:tt
+            val time = date.substring(10)
+            Text(
+                text = time, Modifier
+                    .width(70.dp)
+                    .height(48.dp)
+                    .padding(start = 18.dp), fontSize = 12.sp, textAlign = TextAlign.Center
+            )
+            Divider(
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .width(1.dp)
+                    .height(30.dp)
+            )
+            Text(
+                text = text, Modifier.padding(start = 10.dp), fontSize = 16.sp
+            )
+
+
+        }
     }
+
 }
 
 
 private fun isToday(date: String): Boolean {
     val sdf = SimpleDateFormat("yyyy MM/dd hh:mm:ss")
     val currentDate = sdf.format(Date())
-    return date.substring(0, 10) == currentDate.substring(0, 10)
+    return isSameDay(date, currentDate)
 }
 
 private fun dateToWrittenDate(date: String): String {
+//    Log.d("Wechat", date)
     if (isToday(date)) {
         return "Today"
     }
@@ -169,6 +178,11 @@ private fun dateToWrittenDate(date: String): String {
     val month = date.substring(5, 7)
     val day = date.substring(8, 10)
     return "$month/$day $year"
+}
+
+private fun isSameDay(day1: String, day2: String): Boolean {
+    if (day1 == "") return false
+    return day1.substring(0, 10) == day2.substring(0, 10)
 }
 
 @ExperimentalFoundationApi
@@ -180,7 +194,9 @@ fun ShowAllMessages(
 ) {
 
     val lazyMessages: LazyPagingItems<Message> = pageMessages.collectAsLazyPagingItems()
-    var date: String
+
+    val sdf = SimpleDateFormat("yyyy MM/dd hh:mm:ss")
+    val currentDate = remember { mutableStateOf("") }
     SwipeRefreshList(collectAsLazyPagingItems = lazyMessages) {
         items(items = lazyMessages,
             key = { message ->
@@ -188,9 +204,17 @@ fun ShowAllMessages(
             }) { message ->
             if (message != null) {
 
-                if (isToday(message.date!!)) {
+                if (!isSameDay(currentDate.value, message.date!!)) {
                     ShowDate(date = message.date!!)
+                    Log.d("Wechat", "$currentDate.value $message.date!!")
+                    currentDate.value = message.date!!
                 }
+
+//                if (!isSameDay(date, message.date!!)) {
+//                    ShowDate(date = message.date!!)
+//                    date = message.date!!
+//                }
+
                 ShowMessage(
                     date = message.date!!,
                     text = message.content,
