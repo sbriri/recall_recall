@@ -58,6 +58,7 @@ class WechatFragment : Fragment() {
 
                 Log.d(TAG, names.toString())
                 val adp = WechatItemAdapter(tempMessages)
+
                 adp.onItemClick = { message ->
                     val fragment = ChatFragment(message.name, getString(R.string.title_wechat))
                     val transation = activity?.supportFragmentManager?.beginTransaction()!!.apply {
@@ -71,6 +72,7 @@ class WechatFragment : Fragment() {
 
 
             })
+
 
         }
 

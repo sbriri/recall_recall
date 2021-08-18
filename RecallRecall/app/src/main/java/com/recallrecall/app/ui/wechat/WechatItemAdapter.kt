@@ -1,14 +1,16 @@
 package com.recallrecall.app.ui.wechat
 
-import android.graphics.ColorSpace
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.recallrecall.app.R
 import com.recallrecall.app.db.Message
+
 
 
 class WechatItemAdapter(
@@ -22,13 +24,12 @@ class WechatItemAdapter(
         val textViewUser: TextView = view.findViewById(R.id.textView_user)
         val textViewDate: TextView = view.findViewById(R.id.textView_date)
         val textViewContent: TextView = view.findViewById(R.id.textView_content)
-
-
+        val view = view
         fun updateView(message: Message) {
             textViewUser.text = message.name
             textViewDate.text = message.date
             textViewContent.text = message.content
-
+            if (message.recalled) view.setBackgroundColor(ContextCompat.getColor(view.context,R.color.pinky_red))
             Log.d("adapter", message.toString())
 
         }
@@ -51,6 +52,7 @@ class WechatItemAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.d("adapter", messages.toString())
+
         holder.updateView(messages!![position]!!)
     }
 
