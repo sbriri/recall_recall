@@ -70,6 +70,7 @@ class WeChatService(context: Context) {
 
         //建立message
         val msg = Message(name = title, content = content, date = date)
+        Log.d("GuardNotificationListenerService", msg.toString())
 
         messageDao?.insertAll(msg)
 

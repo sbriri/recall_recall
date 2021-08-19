@@ -54,7 +54,7 @@ class WechatFragment : Fragment() {
                     return@observe
                 }
                 val tempMessages = getLatestMessages(names)
-                Log.d(TAG, tempMessages.toString())
+//                Log.d(TAG, tempMessages.toString())
 
                 Log.d(TAG, names.toString())
                 val adp = WechatItemAdapter(tempMessages)
