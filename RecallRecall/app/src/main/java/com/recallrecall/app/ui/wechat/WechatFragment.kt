@@ -62,6 +62,12 @@ class WechatFragment : Fragment() {
                 adp.onItemClick = { message ->
                     val fragment = ChatFragment(message.name, getString(R.string.title_wechat))
                     val transation = activity?.supportFragmentManager?.beginTransaction()!!.apply {
+                        setCustomAnimations(
+                            R.anim.slide_right_in,
+                            R.anim.slide_left_out,
+                            R.anim.slide_left_in,
+                            R.anim.slide_right_out
+                        )
                         replace(R.id.fragment_wechat, fragment)
                         addToBackStack(null)
                     }

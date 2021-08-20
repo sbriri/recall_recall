@@ -20,7 +20,7 @@ class WechatItemAdapter(
 
     var onItemClick: ((Message) -> Unit)? = null
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         val textViewUser: TextView = view.findViewById(R.id.textView_user)
         val textViewDate: TextView = view.findViewById(R.id.textView_date)
         val textViewContent: TextView = view.findViewById(R.id.textView_content)
@@ -35,9 +35,11 @@ class WechatItemAdapter(
         }
 
         init {
-            view.setOnClickListener {
-                onItemClick?.invoke(messages!![adapterPosition]!!)
-            }
+            view.setOnClickListener(this)
+        }
+
+        override fun onClick(p0: View?) {
+            onItemClick?.invoke(messages!![adapterPosition]!!)
         }
 
     }

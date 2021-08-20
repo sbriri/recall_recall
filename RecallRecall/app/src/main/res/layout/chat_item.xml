@@ -6,7 +6,8 @@
     android:layout_height="81dp"
     android:clickable="true"
     android:id="@+id/chat_item"
-    android:focusable="true">
+    android:focusable="true"
+    android:background="@drawable/selector_item_selected">
 
 
 
