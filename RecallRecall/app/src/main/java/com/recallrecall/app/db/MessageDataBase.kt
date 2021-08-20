@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.CoroutineScope
 
 
-@Database(entities = [Message::class], version = 1, exportSchema = false)
+@Database(entities = [Message::class], version = 2, exportSchema = false)
 abstract class MessageDataBase : RoomDatabase() {
 
 
@@ -25,6 +25,7 @@ abstract class MessageDataBase : RoomDatabase() {
                     MessageDataBase::class.java,
                     DB_NAME_WECHAT
                 )
+//                    .fallbackToDestructiveMigration()
                     .allowMainThreadQueries() //默认room不允许在主线程操作数据库，这里设置允许
                     .build()
             }

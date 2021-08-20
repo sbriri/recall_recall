@@ -14,12 +14,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.recallrecall.app.databinding.ActivityMainBinding
 import com.recallrecall.app.service.GuardNotificationListenerService
+import com.recallrecall.app.ui.chat.ChatFragment
 import kotlinx.android.synthetic.main.settings_activity.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +79,35 @@ class MainActivity : AppCompatActivity() {
             startActivity(settings)
         }
         return super.onOptionsItemSelected(item)
+
+    }
+
+    override fun onResume() {
+
+        getNotify(intent)
+        super.onResume()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+
+        getNotify(intent)
+        setIntent(intent)
+        super.onNewIntent(intent)
+    }
+
+    private fun getNotify(intent: Intent?) {
+
+        val extra = intent?.getStringExtra("name")
+        if (extra != null) {
+            intent.removeExtra("name")
+            val fragment = ChatFragment(extra, getString(R.string.title_wechat))
+            val transation = supportFragmentManager?.beginTransaction()!!.apply {
+                replace(R.id.fragment_wechat, fragment)
+                addToBackStack(null)
+                commitAllowingStateLoss()
+            }
+//            transation.commit()
+        }
 
     }
 }

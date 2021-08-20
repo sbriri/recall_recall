@@ -17,7 +17,6 @@ import com.recallrecall.app.MainActivity
 import com.recallrecall.app.R
 import com.recallrecall.app.databinding.FragmentWechatBinding
 import com.recallrecall.app.db.Message
-import com.recallrecall.app.ui.chat.ChatActivity
 import com.recallrecall.app.ui.chat.ChatFragment
 import kotlinx.android.synthetic.main.fragment_wechat.view.*
 
@@ -55,13 +54,20 @@ class WechatFragment : Fragment() {
                     return@observe
                 }
                 val tempMessages = getLatestMessages(names)
-                Log.d(TAG, tempMessages.toString())
+//                Log.d(TAG, tempMessages.toString())
 
                 Log.d(TAG, names.toString())
                 val adp = WechatItemAdapter(tempMessages)
+
                 adp.onItemClick = { message ->
                     val fragment = ChatFragment(message.name, getString(R.string.title_wechat))
                     val transation = activity?.supportFragmentManager?.beginTransaction()!!.apply {
+                        setCustomAnimations(
+                            R.anim.slide_right_in,
+                            R.anim.slide_left_out,
+                            R.anim.slide_left_in,
+                            R.anim.slide_right_out
+                        )
                         replace(R.id.fragment_wechat, fragment)
                         addToBackStack(null)
                     }
@@ -73,11 +79,8 @@ class WechatFragment : Fragment() {
 
             })
 
+
         }
-
-
-
-
 
 
         return root

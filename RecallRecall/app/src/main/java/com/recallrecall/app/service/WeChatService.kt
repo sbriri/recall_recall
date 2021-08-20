@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import android.app.NotificationManager
 
 import android.app.NotificationChannel
+import android.content.ComponentName
 import android.content.Intent
 
 import android.os.Build
@@ -24,8 +25,8 @@ import androidx.navigation.NavDeepLinkBuilder
 
 import android.os.Bundle
 import androidx.compose.ui.res.stringResource
+import com.recallrecall.app.MainActivity
 import com.recallrecall.app.R
-import com.recallrecall.app.ui.chat.ChatActivity
 import java.lang.StringBuilder
 
 
@@ -69,6 +70,7 @@ class WeChatService(context: Context) {
 
         //建立message
         val msg = Message(name = title, content = content, date = date)
+        Log.d("GuardNotificationListenerService", msg.toString())
 
         messageDao?.insertAll(msg)
 
@@ -150,12 +152,14 @@ class WeChatService(context: Context) {
         context: Context,
         message: Message
     ): PendingIntent? {
-        val intent = Intent(context, ChatActivity::class.java).apply {
+        val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            component = ComponentName(context,MainActivity::class.java)
         }
         intent.putExtra("name", message.name)
         val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         return pendingIntent
     }
 
