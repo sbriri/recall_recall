@@ -39,6 +39,16 @@ import com.recallrecall.app.MainActivity
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.*
+import android.animation.Animator
+
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+
+
+
+
+
+
 
 
 class ChatViewModel(name: String) : ViewModel() {
@@ -71,7 +81,22 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
         val root: View = binding.root
 
         (activity as MainActivity?)?.findViewById<Toolbar>(R.id.toolbar)?.title = name
-        (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)?.visibility = View.GONE
+//        (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)?.visibility = View.GONE
+        val view = (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)
+        view?.visibility = View.GONE
+//        if (view != null) {
+//            fadeOutAnimation(view)
+//        }
+//        view!!.animate()
+//            .translationY(view.height.toFloat())
+//            .alpha(0.0f)
+//            .setDuration(300)
+//            .setListener(object : AnimatorListenerAdapter() {
+//                override fun onAnimationEnd(animation: Animator) {
+//                    super.onAnimationEnd(animation)
+//                    view.visibility = View.GONE
+//                }
+//            })
 
         val chatCompose = root.findViewById<ComposeView>(R.id.chatCompose)
         chatCompose.setContent {
@@ -91,9 +116,50 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
 
 
     override fun onDestroy() {
-        super.onDestroy()
         (activity as MainActivity?)?.findViewById<Toolbar>(R.id.toolbar)?.title = from
-        (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)?.visibility = View.VISIBLE
+//        (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)?.visibility = View.VISIBLE
+        val view = (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)
+//        view!!.animate()
+//            .translationY(view.height.toFloat())
+//            .alpha(1.0f)
+//            .setDuration(300)
+//            .setListener(object : AnimatorListenerAdapter() {
+//                override fun onAnimationEnd(animation: Animator) {
+//                    super.onAnimationEnd(animation)
+//                    view.visibility = View.VISIBLE
+//                }
+//            })
+//        if (view != null) {
+//            fadeInAnimation(view)
+//        }
+        view?.visibility = View.VISIBLE
+        super.onDestroy()
+
+    }
+
+    fun fadeOutAnimation(viewToFadeOut: BottomNavigationView) {
+        val fadeOut = ObjectAnimator.ofFloat(viewToFadeOut, "alpha", 1f, 0f)
+        fadeOut.duration = 300
+        fadeOut.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                // We wanna set the view to GONE, after it's fade out. so it actually disappear from the layout & don't take up space.
+                viewToFadeOut.visibility = View.GONE
+            }
+        })
+        fadeOut.start()
+    }
+
+    fun fadeInAnimation(viewToFadeIn: BottomNavigationView) {
+        val fadeIn = ObjectAnimator.ofFloat(viewToFadeIn, "alpha", 0f, 1f)
+        fadeIn.duration = 300
+        fadeIn.addListener(object : AnimatorListenerAdapter() {
+            fun onAnimationStar(animation: Animator?) {
+                // We wanna set the view to VISIBLE, but with alpha 0. So it appear invisible in the layout.
+                viewToFadeIn.visibility = View.VISIBLE
+//                viewToFadeIn.setAlpha(0f)
+            }
+        })
+        fadeIn.start()
     }
 
 }
