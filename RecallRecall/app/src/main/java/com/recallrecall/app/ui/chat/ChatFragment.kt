@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import androidx.navigation.Navigation
 import androidx.paging.*
 import com.recallrecall.app.R
 import com.recallrecall.app.databinding.FragmentChatBinding
@@ -33,6 +34,7 @@ import com.recallrecall.app.ui.chat.ui.theme.RecallRecallTheme
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.recallrecall.app.MainActivity
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
@@ -43,7 +45,7 @@ class ChatViewModel(name: String) : ViewModel() {
     val dataBase = MessageDataBase.getInstance(Activity().baseContext)
 
     val msgs =
-        Pager(PagingConfig(pageSize = 30, enablePlaceholders = true)) {
+        Pager(PagingConfig(pageSize = 50, enablePlaceholders = true)) {
             dataBase?.messageDao!!.loadByName(name)
         }.flow
 
@@ -69,7 +71,7 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
         val root: View = binding.root
 
         (activity as MainActivity?)?.findViewById<Toolbar>(R.id.toolbar)?.title = name
-
+        (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)?.visibility = View.GONE
 
         val chatCompose = root.findViewById<ComposeView>(R.id.chatCompose)
         chatCompose.setContent {
@@ -91,6 +93,7 @@ class ChatFragment(private val name: String, private val from: String) : Fragmen
     override fun onDestroy() {
         super.onDestroy()
         (activity as MainActivity?)?.findViewById<Toolbar>(R.id.toolbar)?.title = from
+        (activity as MainActivity?)?.findViewById<BottomNavigationView>(R.id.nav_view)?.visibility = View.VISIBLE
     }
 
 }

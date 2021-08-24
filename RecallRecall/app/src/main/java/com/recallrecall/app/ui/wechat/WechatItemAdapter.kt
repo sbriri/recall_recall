@@ -29,8 +29,8 @@ class WechatItemAdapter(
             textViewUser.text = message.name
             textViewDate.text = message.date
             textViewContent.text = message.content
-            if (message.recalled) view.setBackgroundColor(ContextCompat.getColor(view.context,R.color.pinky_red))
-            Log.d("adapter", message.toString())
+//            if (message.recalled) view.setBackgroundColor(ContextCompat.getColor(view.context,R.color.pinky_red))
+            Log.d("adapter updateView", message.toString())
 
         }
 
@@ -48,12 +48,12 @@ class WechatItemAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.chat_item, parent, false)
-        Log.d("adapter", "onCreateViewHolder $messages")
+//        Log.d("adapter", "onCreateViewHolder $messages")
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d("adapter", messages.toString())
+//        Log.d("adapter", messages.toString())
 
         holder.updateView(messages!![position]!!)
     }
